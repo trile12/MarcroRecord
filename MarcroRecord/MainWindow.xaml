@@ -5,32 +5,100 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MarcroRecord"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
-    Width="800"
-    Height="450"
+    Width="1024"
+    Height="768"
+    Background="Black"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Normal"
+    WindowStyle="None"
     mc:Ignorable="d">
     <Grid>
-        <DataGrid
-            Margin="10"
-            AutoGenerateColumns="True"
-            ItemsSource="{Binding MacroEvents}" />
-        <StackPanel
-            Margin="10"
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            x:Name="RecordingText"
             HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
+            VerticalAlignment="Top"
+            FontSize="20"
+            FontWeight="Medium"
+            Foreground="Red"
+            Text="Recording"
+            Visibility="Collapsed" />
+
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
             Orientation="Horizontal">
             <Button
-                Margin="5"
-                Click="StartRecording_Click"
-                Content="Start Recording" />
+                x:Name="RecordButton"
+                Width="50"
+                Height="30"
+                Margin="20,0,0,20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                Click="RecordButton_Click"
+                Content="+"
+                FontSize="20"
+                Foreground="White"
+                Style="{StaticResource RecordButtonStyle}" />
             <Button
-                Margin="5"
-                Click="StopRecording_Click"
-                Content="Stop Recording" />
+                x:Name="ResetButton"
+                Width="130"
+                Height="30"
+                Margin="20,0,0,20"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Click="ResetButton_Click"
+                Content="Reset"
+                Foreground="White"
+                Style="{StaticResource ButtonStyle}" />
             <Button
-                Margin="5"
-                Click="PlayMacro_Click"
-                Content="Play Macro" />
+                x:Name="SaveButton"
+                Width="130"
+                Height="30"
+                Margin="20,0,20,20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Click="SaveButton_Click"
+                Content="Save"
+                Foreground="White"
+                Style="{StaticResource SaveButtonStyle}" />
         </StackPanel>
+        <ScrollViewer
+            Margin="40"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Disabled"
+            IsHitTestVisible="False"
+            VerticalScrollBarVisibility="Auto">
+            <WrapPanel x:Name="KeyWrapPanel" Orientation="Horizontal" />
+        </ScrollViewer>
+
+        <Border
+            Grid.ColumnSpan="2"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            MouseDown="MainBorder_MouseDown">
+            <StackPanel
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                FlowDirection="RightToLeft"
+                Orientation="Horizontal">
+                <Button
+                    Click="Close_Click"
+                    Content="{StaticResource close_ico}"
+                    Style="{StaticResource WindowButtonStyle}" />
+                <Button
+                    Click="Minimize_Click"
+                    Content="{StaticResource minimize_ico}"
+                    Style="{StaticResource WindowButtonStyle}"
+                    Tag="IsMinimizeButton" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

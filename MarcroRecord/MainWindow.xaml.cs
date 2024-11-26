@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MarcroRecord
 {
@@ -20,28 +10,106 @@ namespace MarcroRecord
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool isRecording = false;
         private MacroRecorderService _macroService = new MacroRecorderService();
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = _macroService;
+            _macroService.KeyDown += MacroService_KeyDown;
         }
 
-        private void StartRecording_Click(object sender, RoutedEventArgs e)
+        private void MacroService_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            _macroService.StartRecording();
+            if (isRecording)
+            {
+                Button keyButton = new Button
+                {
+                    Content = e.KeyValue.ToString(),
+                    Background = System.Windows.Media.Brushes.Gray,
+                    Foreground = System.Windows.Media.Brushes.White,
+                    Width = 60,
+                    Height = 40,
+                    Margin = new Thickness(5)
+                };
+
+                KeyWrapPanel.Children.Add(keyButton);
+            }
         }
 
-        private void StopRecording_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _macroService.StopRecording();
+            if (isRecording)
+            {
+                Button mouseButton = new Button
+                {
+                    Content = "Left Click",
+                    Background = System.Windows.Media.Brushes.Orange,
+                    Foreground = System.Windows.Media.Brushes.White,
+                    Width = 100,
+                    Height = 40,
+                    Margin = new Thickness(5)
+                };
+
+                KeyWrapPanel.Children.Add(mouseButton);
+            }
         }
 
-        private async void PlayMacro_Click(object sender, RoutedEventArgs e)
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            await _macroService.PlayMacroAsync();
-            MessageBox.Show("Playback finished.");
+            KeyWrapPanel.Children.Clear();
+        }
+
+        private void RecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (isRecording)
+            {
+                RecordButton.Background = System.Windows.Media.Brushes.Green;
+                RecordButton.Content = "+";
+                RecordingText.Visibility = Visibility.Collapsed;
+                SaveButton.IsEnabled = true;
+                _macroService.StopRecording();
+            }
+            else
+            {
+                RecordButton.Background = System.Windows.Media.Brushes.Red;
+                RecordButton.Content = "Stop";
+                RecordingText.Visibility = Visibility.Visible;
+                SaveButton.IsEnabled = false;
+                _macroService.StartRecording();
+            }
+
+            isRecording = !isRecording;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Saved!");
+        }
+
+        private void MainBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _macroService?.KeyEvents?.Dispose();
+            base.OnClosed(e);
         }
     }
 }

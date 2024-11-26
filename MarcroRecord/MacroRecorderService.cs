@@ -1,9 +1,9 @@
-﻿
-using Gma.System.MouseKeyHook;
+﻿using Gma.System.MouseKeyHook;
 using MarcroRecord.Model;
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsInput;
@@ -13,26 +13,53 @@ namespace MarcroRecord
 {
     public class MacroRecorderService
     {
-        private IKeyboardMouseEvents _events;
         private ObservableCollection<MacroEvent> _macroEvents = new ObservableCollection<MacroEvent>();
         public ObservableCollection<MacroEvent> MacroEvents => _macroEvents;
+        public event EventHandler<KeyEventArgs> KeyDown;
+        public IKeyboardMouseEvents KeyEvents;
+        private bool _isRecording = false;
 
         private DateTime _lastEventTime;
 
+        public void SaveToJson(string filePath)
+        {
+            string json = JsonConvert.SerializeObject(_macroEvents, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+
+        public void LoadFromJson(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                var events = JsonConvert.DeserializeObject<ObservableCollection<MacroEvent>>(json);
+                _macroEvents.Clear();
+                foreach (var macroEvent in events)
+                {
+                    _macroEvents.Add(macroEvent);
+                }
+            }
+        }
+
         public void StartRecording()
         {
+            _isRecording = true;
             _macroEvents.Clear();
             _lastEventTime = DateTime.Now;
 
-            _events = Hook.GlobalEvents();
-            _events.KeyDown += OnKeyDown;
-            //_events.MouseMove += OnMouseMove;
-            _events.MouseDown += OnMouseDown;
+            KeyEvents = Hook.GlobalEvents();
+            KeyEvents.KeyDown += OnKeyDown;
+            KeyEvents.MouseDown += OnMouseDown;
         }
 
         public void StopRecording()
         {
-            _events?.Dispose();
+            _isRecording = false;
+            if (KeyEvents == null) return;
+
+            KeyEvents.KeyDown -= OnKeyDown;
+            KeyEvents.MouseDown -= OnMouseDown;
+            //KeyEvents?.Dispose();
         }
 
         public async Task PlayMacroAsync()
@@ -80,19 +107,27 @@ namespace MarcroRecord
             return null;
         }
 
-        private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            AddMacroEvent("KeyDown", e.KeyCode.ToString());
+            if (_isRecording)
+            {
+                AddMacroEvent("KeyDown", e.KeyCode.ToString());
+                KeyDown?.Invoke(this, e);
+            }
+            else
+            {
+
+            }
         }
 
-        private void OnMouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            AddMacroEvent("MouseMove", x: e.X, y: e.Y);
-        }
+            if (_isRecording)
+                AddMacroEvent("MouseDown", e.Button.ToString());
+            else
+            {
 
-        private void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            AddMacroEvent("MouseDown", e.Button.ToString());
+            }
         }
 
         private void AddMacroEvent(string eventType, string key = null, int x = 0, int y = 0)
@@ -102,8 +137,6 @@ namespace MarcroRecord
             {
                 EventType = eventType,
                 Key = key,
-                X = x,
-                Y = y,
                 Delay = 20
             });
             _lastEventTime = DateTime.Now;
