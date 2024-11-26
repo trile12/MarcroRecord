@@ -1,0 +1,36 @@
+﻿<Window
+    x:Class="MarcroRecord.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MarcroRecord"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+    <Grid>
+        <DataGrid
+            Margin="10"
+            AutoGenerateColumns="True"
+            ItemsSource="{Binding MacroEvents}" />
+        <StackPanel
+            Margin="10"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Orientation="Horizontal">
+            <Button
+                Margin="5"
+                Click="StartRecording_Click"
+                Content="Start Recording" />
+            <Button
+                Margin="5"
+                Click="StopRecording_Click"
+                Content="Stop Recording" />
+            <Button
+                Margin="5"
+                Click="PlayMacro_Click"
+                Content="Play Macro" />
+        </StackPanel>
+    </Grid>
+</Window>
