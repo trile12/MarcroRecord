@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MarcroRecord.Helper
@@ -12,7 +8,9 @@ namespace MarcroRecord.Helper
         private readonly Action _execute;
         private readonly Func<bool> _canExecute;
 
-        public RelayCommand(Action execute) : this(execute, null) { }
+        public RelayCommand(Action execute) : this(execute, null)
+        {
+        }
 
         public RelayCommand(Action execute, Func<bool> canExecute)
         {

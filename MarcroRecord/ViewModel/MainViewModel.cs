@@ -1,13 +1,9 @@
 ﻿using MarcroRecord.Helper;
 using MarcroRecord.Model;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MarcroRecord.ViewModel
@@ -38,6 +34,7 @@ namespace MarcroRecord.ViewModel
             _macroEvents.Clear();
             _macroService.StartRecording();
         }
+
         public void Stop()
         {
             IsRecording = false;
@@ -52,7 +49,6 @@ namespace MarcroRecord.ViewModel
             }
             else
             {
-
             }
         }
 
@@ -64,7 +60,6 @@ namespace MarcroRecord.ViewModel
             }
             else
             {
-
             }
         }
 
@@ -79,10 +74,12 @@ namespace MarcroRecord.ViewModel
         }
 
         #region Properties
+
         private ObservableCollection<MacroEvent> _macroEvents = new ObservableCollection<MacroEvent>();
         public ObservableCollection<MacroEvent> MacroEvents => _macroEvents;
 
         private ObservableCollection<MacroModel> _macroModels = new ObservableCollection<MacroModel>();
+
         public ObservableCollection<MacroModel> MacroModels
         {
             get => _macroModels;
@@ -140,6 +137,7 @@ namespace MarcroRecord.ViewModel
                 Console.WriteLine($"Key changed: {changedMacro.Key}");
             }
         }
-        #endregion
+
+        #endregion Properties
     }
 }
