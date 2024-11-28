@@ -62,10 +62,10 @@
         x:Key="SaveButtonStyle"
         BasedOn="{StaticResource ButtonStyle}"
         TargetType="Button">
-        <Setter Property="Background" Value="#0061F2" />
+        <Setter Property="Background" Value="#00A9E0" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#004BB5" />
+                <Setter Property="Background" Value="#00A9E0" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -102,53 +102,24 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="Margin" Value="5,2" />
-                    <Setter Property="Padding" Value="10,5" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,2" />
                     <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="Foreground" Value="#333" />
-                    <Setter Property="FontSize" Value="14" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Cursor" Value="Hand" />
                     <Setter Property="Effect">
                         <Setter.Value>
                             <DropShadowEffect
-                                BlurRadius="8"
+                                BlurRadius="0"
                                 ShadowDepth="0"
                                 Color="Transparent" />
                         </Setter.Value>
                     </Setter>
-                    <!--  Hover Effect  -->
+                    <!--  Remove hover and selection effects  -->
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <Border
-                                    x:Name="border"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="6">
-                                    <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                <Border Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center" />
                                 </Border>
-                                <ControlTemplate.Triggers>
-                                    <!--  Hover Trigger  -->
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="border" Property="Background" Value="#E3F2FD" />
-                                        <Setter Property="Effect">
-                                            <Setter.Value>
-                                                <DropShadowEffect
-                                                    BlurRadius="8"
-                                                    ShadowDepth="0"
-                                                    Color="#90CAF9" />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                    <!--  Selected Trigger  -->
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#2196F3" />
-                                        <Setter Property="Foreground" Value="White" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -171,7 +142,7 @@
                                 <RepeatButton Command="ScrollBar.PageUpCommand" />
                             </Track.DecreaseRepeatButton>
                             <Track.Thumb>
-                                <Thumb Background="#90CAF9" />
+                                <Thumb Background="#00A9E0" />
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton Command="ScrollBar.PageDownCommand" />

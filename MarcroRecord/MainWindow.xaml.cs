@@ -1,8 +1,11 @@
-﻿using MarcroRecord.Model;
+﻿using MarcroRecord.Helper;
+using MarcroRecord.Model;
+using MarcroRecord.ViewModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -17,21 +20,21 @@ namespace MarcroRecord
     public partial class MainWindow : Window
     {
         public string _currentMacroName;
-        private bool isRecording = false;
         private MacroRecorderService _macroService = new MacroRecorderService();
+        private MainViewModel _mainViewModel = new MainViewModel();
         private readonly string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = _macroService;
+            DataContext = _mainViewModel;
             _macroService.KeyDown += MacroService_KeyDown;
             _macroService.MouseDown += MacroService_MouseDown;
         }
 
         private void MacroService_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (isRecording)
+            if (_mainViewModel.IsRecording)
             {
                 Button keyButton = new Button
                 {
@@ -49,7 +52,7 @@ namespace MarcroRecord
 
         private void MacroService_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (isRecording)
+            if (_mainViewModel.IsRecording)
             {
                 Button mouseButton = new Button
                 {
@@ -71,7 +74,7 @@ namespace MarcroRecord
 
         private void RecordButton_Click(object sender, RoutedEventArgs e)
         {
-            if (isRecording)
+            if (_mainViewModel.IsRecording)
             {
                 RecordButton.Background = System.Windows.Media.Brushes.Green;
                 RecordButton.Content = "+";
@@ -88,7 +91,7 @@ namespace MarcroRecord
                 _macroService.StartRecording();
             }
 
-            isRecording = !isRecording;
+            _mainViewModel.IsRecording = !_mainViewModel.IsRecording;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -153,12 +156,12 @@ namespace MarcroRecord
         private void ResetView()
         {
             _currentMacroName = "";
-            _macroService?.MacroEvents?.Clear();
+            _mainViewModel?.MacroEvents?.Clear();
             KeyWrapPanel.Children.Clear();
 
             NameInputPanel.Visibility = Visibility.Visible;
             RecordPanel.Visibility = Visibility.Collapsed;
-            LoadSavedMacros();
+            LoadSavedMacroModels();
         }
 
         public void SaveToJson(string fileName)
@@ -171,7 +174,10 @@ namespace MarcroRecord
                 }
 
                 string filePath = Path.Combine(dataFolder, fileName);
-                string json = JsonConvert.SerializeObject(_macroService.MacroEvents, Formatting.Indented);
+                MacroModel macroModel = new MacroModel();
+                macroModel.Name = Path.GetFileNameWithoutExtension(fileName);
+                macroModel.MacroEvents = _mainViewModel.MacroEvents.ToList();
+                string json = JsonConvert.SerializeObject(macroModel, Formatting.Indented);
                 File.WriteAllText(filePath, json);
             }
             catch (Exception ex)
@@ -179,32 +185,25 @@ namespace MarcroRecord
             }
         }
 
-        public void LoadFromJson(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                string json = File.ReadAllText(filePath);
-                var events = JsonConvert.DeserializeObject<ObservableCollection<MacroEvent>>(json);
-                _macroService.MacroEvents.Clear();
-                foreach (var macroEvent in events)
-                {
-                    _macroService.MacroEvents.Add(macroEvent);
-                }
-            }
-        }
-
-        private void LoadSavedMacros()
+        private void LoadSavedMacroModels()
         {
             if (Directory.Exists(dataFolder))
             {
                 var files = Directory.GetFiles(dataFolder, "*.json");
-                SavedMacrosList.ItemsSource = files.Select(Path.GetFileNameWithoutExtension).ToList();
+
+                foreach (var file in files)
+                {
+                    var model = LogicHelper.GetMarcroModelFromJson(file);
+                    if (model != null)
+                        _mainViewModel.MacroModels.Add(new MacroModel { Name = model.Name, Key = model.Key });
+                }
+                SavedMacrosList.ItemsSource = _mainViewModel.MacroModels;
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadSavedMacros();
+            LoadSavedMacroModels();
         }
     }
 }
