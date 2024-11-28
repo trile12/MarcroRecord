@@ -15,31 +15,13 @@ namespace MarcroRecord
     {
         private ObservableCollection<MacroEvent> _macroEvents = new ObservableCollection<MacroEvent>();
         public ObservableCollection<MacroEvent> MacroEvents => _macroEvents;
+
         public event EventHandler<KeyEventArgs> KeyDown;
+        public event EventHandler<MouseEventArgs> MouseDown;
+
         public IKeyboardMouseEvents KeyEvents;
         private bool _isRecording = false;
-
         private DateTime _lastEventTime;
-
-        public void SaveToJson(string filePath)
-        {
-            string json = JsonConvert.SerializeObject(_macroEvents, Formatting.Indented);
-            File.WriteAllText(filePath, json);
-        }
-
-        public void LoadFromJson(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                string json = File.ReadAllText(filePath);
-                var events = JsonConvert.DeserializeObject<ObservableCollection<MacroEvent>>(json);
-                _macroEvents.Clear();
-                foreach (var macroEvent in events)
-                {
-                    _macroEvents.Add(macroEvent);
-                }
-            }
-        }
 
         public void StartRecording()
         {
@@ -123,7 +105,10 @@ namespace MarcroRecord
         private void OnMouseDown(object sender, MouseEventArgs e)
         {
             if (_isRecording)
+            {
                 AddMacroEvent("MouseDown", e.Button.ToString());
+                MouseDown?.Invoke(this, e);
+            }
             else
             {
 

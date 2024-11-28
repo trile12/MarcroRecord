@@ -8,76 +8,118 @@
     Width="1024"
     Height="768"
     Background="Black"
+    Loaded="Window_Loaded"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     WindowState="Normal"
     WindowStyle="None"
     mc:Ignorable="d">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <TextBlock
-            x:Name="RecordingText"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Top"
-            FontSize="20"
-            FontWeight="Medium"
-            Foreground="Red"
-            Text="Recording"
-            Visibility="Collapsed" />
-
-        <StackPanel
-            Grid.Row="1"
-            HorizontalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                x:Name="RecordButton"
-                Width="50"
-                Height="30"
-                Margin="20,0,0,20"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <StackPanel
+                x:Name="NameInputPanel"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                VerticalContentAlignment="Center"
-                Click="RecordButton_Click"
-                Content="+"
-                FontSize="20"
+                Visibility="Visible">
+                <TextBlock
+                    Margin="0,0,0,10"
+                    FontSize="20"
+                    FontStyle="Italic"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    Text="Name" />
+                <TextBox
+                    x:Name="NameInputTextBox"
+                    Height="40"
+                    MinWidth="300"
+                    Margin="0,0,0,10"
+                    FontSize="24" />
+                <Button
+                    Width="100"
+                    Height="35"
+                    Margin="0,10,0,0"
+                    Click="OnNameInputOK"
+                    Content="OK"
+                    Style="{StaticResource SaveButtonStyle}" />
+            </StackPanel>
+            <Grid x:Name="RecordPanel" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    x:Name="RecordingText"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    FontSize="20"
+                    FontWeight="Medium"
+                    Foreground="Red"
+                    Text="Recording"
+                    Visibility="Collapsed" />
+                <StackPanel
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="RecordButton"
+                        Width="50"
+                        Height="30"
+                        Margin="20,0,0,20"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="RecordButton_Click"
+                        Content="+"
+                        FontSize="20"
+                        Foreground="White"
+                        Style="{StaticResource RecordButtonStyle}" />
+                    <Button
+                        x:Name="ResetButton"
+                        Width="130"
+                        Height="30"
+                        Margin="20,0,0,20"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Click="ResetButton_Click"
+                        Content="Reset"
+                        Foreground="White"
+                        Style="{StaticResource ButtonStyle}" />
+                    <Button
+                        x:Name="SaveButton"
+                        Width="130"
+                        Height="30"
+                        Margin="20,0,20,20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Click="SaveButton_Click"
+                        Content="Save"
+                        Foreground="White"
+                        Style="{StaticResource SaveButtonStyle}" />
+                </StackPanel>
+                <ScrollViewer
+                    Margin="40"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    IsHitTestVisible="False"
+                    VerticalScrollBarVisibility="Auto">
+                    <WrapPanel x:Name="KeyWrapPanel" Orientation="Horizontal" />
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Column="1" Margin="0,30">
+            <TextBlock
+                Margin="0,0,0,10"
+                FontSize="16"
+                FontWeight="Bold"
                 Foreground="White"
-                Style="{StaticResource RecordButtonStyle}" />
-            <Button
-                x:Name="ResetButton"
-                Width="130"
-                Height="30"
-                Margin="20,0,0,20"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Click="ResetButton_Click"
-                Content="Reset"
-                Foreground="White"
-                Style="{StaticResource ButtonStyle}" />
-            <Button
-                x:Name="SaveButton"
-                Width="130"
-                Height="30"
-                Margin="20,0,20,20"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Click="SaveButton_Click"
-                Content="Save"
-                Foreground="White"
-                Style="{StaticResource SaveButtonStyle}" />
+                Text="Saved Macros" />
+            <ListBox x:Name="SavedMacrosList" />
         </StackPanel>
-        <ScrollViewer
-            Margin="40"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            HorizontalScrollBarVisibility="Disabled"
-            IsHitTestVisible="False"
-            VerticalScrollBarVisibility="Auto">
-            <WrapPanel x:Name="KeyWrapPanel" Orientation="Horizontal" />
-        </ScrollViewer>
-
         <Border
             Grid.ColumnSpan="2"
             VerticalAlignment="Top"
@@ -101,4 +143,5 @@
             </StackPanel>
         </Border>
     </Grid>
+
 </Window>
