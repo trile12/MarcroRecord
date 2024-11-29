@@ -10,67 +10,8 @@ namespace MarcroRecord.ViewModel
 {
     public class MainViewModel
     {
-        private MacroRecorderService _macroService = new MacroRecorderService();
-        public bool IsRecording = false;
-
-        public System.Windows.Input.ICommand RecordCommand { get; }
-
         public MainViewModel()
         {
-            _macroService.KeyDown += OnKeyDown;
-            _macroService.MouseDown += OnMouseDown;
-
-            RecordCommand = new RelayCommand(ExecuteRecordCommand);
-        }
-
-        private void ExecuteRecordCommand()
-        {
-            IsRecording = !IsRecording;
-        }
-
-        public void Start()
-        {
-            IsRecording = true;
-            _macroEvents.Clear();
-            _macroService.StartRecording();
-        }
-
-        public void Stop()
-        {
-            IsRecording = false;
-            _macroService.StopRecording();
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (IsRecording)
-            {
-                AddMacroEvent("KeyDown", e.KeyCode.ToString());
-            }
-            else
-            {
-            }
-        }
-
-        private void OnMouseDown(object sender, MouseEventArgs e)
-        {
-            if (IsRecording)
-            {
-                AddMacroEvent("MouseDown", e.Button.ToString());
-            }
-            else
-            {
-            }
-        }
-
-        private void AddMacroEvent(string eventType, string key = null, int x = 0, int y = 0)
-        {
-            _macroEvents.Add(new MacroEvent
-            {
-                EventType = eventType,
-                Key = key,
-                Delay = 20
-            });
         }
 
         #region Properties

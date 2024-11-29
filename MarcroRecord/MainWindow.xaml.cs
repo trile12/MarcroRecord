@@ -16,6 +16,7 @@ namespace MarcroRecord
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isRecording;
         public string _currentMacroName;
         private MacroRecorderService _macroService = new MacroRecorderService();
         private MainViewModel _mainViewModel = new MainViewModel();
@@ -28,10 +29,19 @@ namespace MarcroRecord
             _macroService.KeyDown += MacroService_KeyDown;
             _macroService.MouseDown += MacroService_MouseDown;
         }
+        private void AddMacroEvent(string eventType, string key = null, int x = 0, int y = 0)
+        {
+            _mainViewModel.MacroEvents.Add(new MacroEvent
+            {
+                EventType = eventType,
+                Key = key,
+                Delay = 20
+            });
+        }
 
         private void MacroService_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (_mainViewModel.IsRecording)
+            if (_isRecording)
             {
                 Button keyButton = new Button
                 {
@@ -44,12 +54,13 @@ namespace MarcroRecord
                 };
 
                 KeyWrapPanel.Children.Add(keyButton);
+                AddMacroEvent("KeyDown", e.KeyCode.ToString());
             }
         }
 
         private void MacroService_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (_mainViewModel.IsRecording)
+            if (_isRecording)
             {
                 Button mouseButton = new Button
                 {
@@ -61,6 +72,7 @@ namespace MarcroRecord
                     Margin = new Thickness(5)
                 };
                 KeyWrapPanel.Children.Add(mouseButton);
+                AddMacroEvent("MouseDown", e.Button.ToString());
             }
         }
 
@@ -71,7 +83,7 @@ namespace MarcroRecord
 
         private void RecordButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_mainViewModel.IsRecording)
+            if (_isRecording)
             {
                 RecordButton.Background = System.Windows.Media.Brushes.Green;
                 RecordButton.Content = "+";
@@ -88,37 +100,13 @@ namespace MarcroRecord
                 _macroService.StartRecording();
             }
 
-            _mainViewModel.IsRecording = !_mainViewModel.IsRecording;
+            _isRecording = !_isRecording;
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             SaveToJson(_currentMacroName);
             ResetView();
-        }
-
-        private void MainBorder_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            _macroService?.KeyEvents?.Dispose();
-            base.OnClosed(e);
         }
 
         private void OnNameInputOK(object sender, RoutedEventArgs e)
@@ -153,12 +141,13 @@ namespace MarcroRecord
         private void ResetView()
         {
             _currentMacroName = "";
+            _mainViewModel?.MacroModels.Clear();
             _mainViewModel?.MacroEvents?.Clear();
             KeyWrapPanel.Children.Clear();
 
             NameInputPanel.Visibility = Visibility.Visible;
             RecordPanel.Visibility = Visibility.Collapsed;
-            LoadSavedMacroModels();
+            //LoadSavedMacroModels();
         }
 
         public void SaveToJson(string fileName)
@@ -198,9 +187,34 @@ namespace MarcroRecord
             }
         }
 
+        #region Windows Event
+        private void MainBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             LoadSavedMacroModels();
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _macroService?.KeyEvents?.Dispose();
+            base.OnClosed(e);
+        }
+        #endregion
     }
 }
